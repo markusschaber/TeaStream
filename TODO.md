@@ -6,6 +6,9 @@ If there are already better, mature solutions with acceptable license available,
 
 General: should decoupling via Task.Run / ForceAsync / ForceSerial be better done in a special stream?
 
+## General:
+- Test Coverage.
+
 ## TeaStream
 - Seek support when all underlying streams support seek
 - Timeout support
