@@ -85,7 +85,23 @@ namespace TeaStream
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            return base.BeginWrite(buffer, offset, count, callback, state);
+            // We need some fake type here, as TaskCompletionSource<void> does not exist.
+            var tcs = new TaskCompletionSource<bool>(state);
+
+            ReadAsync(buffer, offset, count).ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                    tcs.TrySetException(t.Exception.InnerException);
+                else if (t.IsCanceled)
+                    tcs.TrySetCanceled();
+                else
+                    tcs.TrySetResult(true);
+
+                callback?.Invoke(tcs.Task);
+            });
+
+            return tcs.Task;
+
         }
 
         public override void Close()
@@ -123,7 +139,7 @@ namespace TeaStream
 
         public override void EndWrite(IAsyncResult asyncResult)
         {
-            base.EndWrite(asyncResult);
+            ((Task<bool>)asyncResult).Wait();
         }
 
         public override void Flush()

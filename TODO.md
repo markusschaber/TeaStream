@@ -9,7 +9,6 @@ General: should decoupling via Task.Run / ForceAsync / ForceSerial be better don
 ## TeaStream
 - Seek support when all underlying streams support seek
 - Timeout support
-- Better support for BeginWrite / EndWrite
 - Do we need to support CreateWaitHandle()?
 - Use "Task.Run" to decouple streams which use high CPU load (e. g. CryptoStream).
 - - Not sure yet how to do this without introducing too much overhead for the other baseStreams.
