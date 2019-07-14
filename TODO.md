@@ -8,6 +8,8 @@ General: should decoupling via Task.Run / ForceAsync / ForceSerial be better don
 
 ## General:
 - Test Coverage.
+- NuGet Packaging
+- Checking whether other/older target frameworks can be supported
 
 ## TeaStream
 - Seek support when all underlying streams support seek
@@ -17,17 +19,21 @@ General: should decoupling via Task.Run / ForceAsync / ForceSerial be better don
 - - Not sure yet how to do this without introducing too much overhead for the other baseStreams.
 - - Maybe this is better done using some dedicated stream wrapper?
 - Do we gain anything by implementing our own CopyToAsync()?
+- Check whether ForceAsync can lead to dead locks on the UI thread (maybe ConfigureAwait(false) or something is necessary?)
 
 ## FilterStream
 - Filter all bytes through given Filter delegates.
 
 ## CoffeStream
-- Readable stream wrapper who replicates all data into a TeaStream.
+- Readable stream wrapper who sidechannels all data into a writeable (Tea)Stream.
 
 ## PipeStream
 - Connect together a readable and a writable stream
+- May need a better name or be obsolete due to https://docs.microsoft.com/de-de/dotnet/standard/io/pipe-operations
 
 ## NullStream
 - Stream which provides as many 0 bytes as you want, and just drops data on write.
 
 ## SpillStream
+- Is multi-level spilling necessary? (More than the two layers MemoryStream and FileStream)?
+- Compression (will disable seeking, except to seek back to the beginning for reading again).

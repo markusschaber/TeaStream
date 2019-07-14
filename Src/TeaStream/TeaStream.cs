@@ -24,7 +24,7 @@ namespace TeaStream
      * that the BaseStreams make the same guarantees.
      * </remarks>
      */
-    public class TeaStream : Stream
+    public sealed class TeaStream : Stream
     {
         private readonly Stream[] baseStreams;
         private readonly TeaFlags flags;

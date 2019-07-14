@@ -17,7 +17,7 @@ namespace TeaStream
     /// Memory backed stream which spills to a temp file stream when the size limit
     /// is reached.
     /// </summary>
-    public class SpillStream : Stream
+    public sealed class SpillStream : Stream
     {
         private Stream _backStream;
         private Func<Stream> _largeStreamFactory;
@@ -80,7 +80,7 @@ namespace TeaStream
         public override int ReadTimeout { get => _backStream.ReadTimeout; set => _backStream.ReadTimeout = value; }
 
         public override int WriteTimeout { get => _backStream.WriteTimeout; set => _backStream.WriteTimeout = value; }
-
+        
         private void MigrateToLongFile()
         {
             Stream newStream = null;
@@ -267,5 +267,6 @@ namespace TeaStream
 
             _backStream.WriteByte(value);
         }
+       
     }
 }
