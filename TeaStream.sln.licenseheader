@@ -1,0 +1,8 @@
+﻿extensions: designer.cs generated.cs
+extensions: .cs .cpp .h
+/* TeaStream Project - Stream Utilities to replicate, duplicate and process Streams in .NET (Core)
+ * 
+ * Copyright © 2019 Markus Schaber
+ * 
+ * Licensed under MIT License, see LICENSE file in top level project directory. 
+ */
