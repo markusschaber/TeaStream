@@ -17,6 +17,11 @@ namespace TeaStream
     /// Memory backed stream which spills to a temp file stream when the size limit
     /// is reached.
     /// </summary>
+    /// <remarks>
+    /// Thread Safety: Any instance of this class may only be called by a single thread
+    /// at once, but subsequent calls may be performed by different threads. It is assumed
+    /// that the BaseStreams make the same guarantees.
+    /// </remarks>
     public sealed class SpillStream : Stream
     {
         private Stream _backStream;
@@ -80,7 +85,7 @@ namespace TeaStream
         public override int ReadTimeout { get => _backStream.ReadTimeout; set => _backStream.ReadTimeout = value; }
 
         public override int WriteTimeout { get => _backStream.WriteTimeout; set => _backStream.WriteTimeout = value; }
-        
+
         private void MigrateToLongFile()
         {
             Stream newStream = null;
@@ -267,6 +272,6 @@ namespace TeaStream
 
             _backStream.WriteByte(value);
         }
-       
+
     }
 }
