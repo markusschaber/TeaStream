@@ -2,7 +2,7 @@
  * 
  * Copyright © 2019 Markus Schaber
  * 
- * Licensed under MIT License, see LICENSE file in top level project directory. 
+ * Licensed under MIT License, see LICENSE.txt file in top level project directory. 
  */
 
 namespace TeaStream
