@@ -4,12 +4,11 @@ This is yet unsorted and unpriorized, and most issues are still open for discuss
 
 If there are already better, mature solutions with acceptable license available, refer to them instead of writing our own. :-)
 
-General: should decoupling via Task.Run / ForceAsync / ForceSerial be better done in a special stream?
-
 ## General:
 - Test Coverage.
 - NuGet Packaging
 - Checking whether other/older target frameworks can be supported
+- should forced decoupling via Task.Run be better done in a special stream? Would unclutter TeaStream and allow for finer grained control.
 
 ## TeaStream
 - Seek support when all underlying streams support seek
@@ -29,7 +28,7 @@ General: should decoupling via Task.Run / ForceAsync / ForceSerial be better don
 
 ## PipeStream
 - Connect together a readable and a writable stream
-- May need a better name or be obsolete due to https://docs.microsoft.com/de-de/dotnet/standard/io/pipe-operations
+- May need a better name or be obsolete due to existing PipeStreams https://docs.microsoft.com/de-de/dotnet/standard/io/pipe-operations
 
 ## NullStream
 - Stream which provides as many 0 bytes as you want, and just drops data on write.

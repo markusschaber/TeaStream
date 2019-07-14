@@ -159,6 +159,7 @@ namespace TeaStream
             ValidateArguments(buffer, offset, count);
         }
 
+        // Validate the arguments, as required by the stream contract.
         private static void ValidateArguments(byte[] buffer, int offset, int count)
         {
             if (buffer == null)
