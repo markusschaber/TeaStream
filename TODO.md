@@ -29,3 +29,5 @@ General: should decoupling via Task.Run / ForceAsync / ForceSerial be better don
 
 ## NullStream
 - Stream which provides as many 0 bytes as you want, and just drops data on write.
+
+## SpillStream

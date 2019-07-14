@@ -130,11 +130,6 @@ namespace TeaStream
             RaiseAggregated(exBuff);
         }
 
-        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
-        {
-            return base.CopyToAsync(destination, bufferSize, cancellationToken);
-        }
-
         public override int EndRead(IAsyncResult asyncResult) => throw new NotSupportedException();
 
         public override void EndWrite(IAsyncResult asyncResult)
