@@ -39,6 +39,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdditionalBytesMustNotBeNegative" xml:space="preserve">
+    <value>Additional bytes must not be negative</value>
+  </data>
   <data name="BufferSizeMustBePositive" xml:space="preserve">
     <value>Buffer size must be positive!</value>
   </data>
@@ -69,13 +72,7 @@
   <data name="StreamLenghtLimitExceeded" xml:space="preserve">
     <value>Stream lenght limit exceeded!</value>
   </data>
-  <data name="TheLargeStreamMustBeReadableWritableAndSeekable" xml:space="preserve">
+  <data name="TheStreamMustBeReadableWritableAndSeekable" xml:space="preserve">
     <value>The large stream must be readable, writable and seekable!</value>
-  </data>
-  <data name="TheSmallStreamMustBeReadableWritableAndSeekable" xml:space="preserve">
-    <value>The small stream must be readable, writable and seekable!</value>
-  </data>
-  <data name="AdditionalBytesMustNotBeNegative" xml:space="preserve">
-    <value>Additional bytes must not be negative</value>
   </data>
 </root>

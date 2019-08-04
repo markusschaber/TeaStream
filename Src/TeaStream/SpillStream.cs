@@ -35,7 +35,7 @@ namespace TeaStream
             _largeStreamFactory = largeStreamCreator ?? CreateTempFileStream;
             _backStream = smallStream ?? new MemoryStream();
             if (!_backStream.CanSeek || !_backStream.CanRead || !_backStream.CanWrite)
-                throw new ArgumentException(Resources.TheSmallStreamMustBeReadableWritableAndSeekable);
+                throw new ArgumentException(Resources.TheStreamMustBeReadableWritableAndSeekable);
         }
 
         public SpillStream(long limit, Func<string> tempFileNameFactory, Stream smallStream = null)
@@ -111,7 +111,7 @@ namespace TeaStream
         {
             newStream = _largeStreamFactory();
             if (!newStream.CanSeek || !newStream.CanRead || !newStream.CanWrite)
-                throw new InvalidOperationException(Resources.TheLargeStreamMustBeReadableWritableAndSeekable);
+                throw new InvalidOperationException(Resources.TheStreamMustBeReadableWritableAndSeekable);
 
             if (_backStream.CanTimeout && newStream.CanTimeout)
             {

@@ -162,18 +162,9 @@ namespace TeaStream.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The large stream must be readable, writable and seekable!.
         /// </summary>
-        internal static string TheLargeStreamMustBeReadableWritableAndSeekable {
+        internal static string TheStreamMustBeReadableWritableAndSeekable {
             get {
-                return ResourceManager.GetString("TheLargeStreamMustBeReadableWritableAndSeekable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The small stream must be readable, writable and seekable!.
-        /// </summary>
-        internal static string TheSmallStreamMustBeReadableWritableAndSeekable {
-            get {
-                return ResourceManager.GetString("TheSmallStreamMustBeReadableWritableAndSeekable", resourceCulture);
+                return ResourceManager.GetString("TheStreamMustBeReadableWritableAndSeekable", resourceCulture);
             }
         }
     }
