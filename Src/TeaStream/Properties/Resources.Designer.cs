@@ -59,5 +59,122 @@ namespace TeaStream.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional bytes must not be negative.
+        /// </summary>
+        internal static string AdditionalBytesMustNotBeNegative {
+            get {
+                return ResourceManager.GetString("AdditionalBytesMustNotBeNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffer size must be positive!.
+        /// </summary>
+        internal static string BufferSizeMustBePositive {
+            get {
+                return ResourceManager.GetString("BufferSizeMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot seek before beginning of file!.
+        /// </summary>
+        internal static string CannotSeekBeforeBeginningOfFile {
+            get {
+                return ResourceManager.GetString("CannotSeekBeforeBeginningOfFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to count negative.
+        /// </summary>
+        internal static string CountNegative {
+            get {
+                return ResourceManager.GetString("CountNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid seek offset.
+        /// </summary>
+        internal static string InvalidSeekOffset {
+            get {
+                return ResourceManager.GetString("InvalidSeekOffset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid SeekOrigin {0}.
+        /// </summary>
+        internal static string InvalidSeekOriginOrigin {
+            get {
+                return ResourceManager.GetString("InvalidSeekOriginOrigin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length cannot be negative!.
+        /// </summary>
+        internal static string LengthCannotBeNegative {
+            get {
+                return ResourceManager.GetString("LengthCannotBeNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to offset + count exceeds buffer.
+        /// </summary>
+        internal static string OffsetCountExceedsBuffer {
+            get {
+                return ResourceManager.GetString("OffsetCountExceedsBuffer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to offset negative.
+        /// </summary>
+        internal static string OffsetNegative {
+            get {
+                return ResourceManager.GetString("OffsetNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Several calls to basestreams failed:.
+        /// </summary>
+        internal static string SeveralCallsToBasestreamsFailed {
+            get {
+                return ResourceManager.GetString("SeveralCallsToBasestreamsFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stream lenght limit exceeded!.
+        /// </summary>
+        internal static string StreamLenghtLimitExceeded {
+            get {
+                return ResourceManager.GetString("StreamLenghtLimitExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The large stream must be readable, writable and seekable!.
+        /// </summary>
+        internal static string TheLargeStreamMustBeReadableWritableAndSeekable {
+            get {
+                return ResourceManager.GetString("TheLargeStreamMustBeReadableWritableAndSeekable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The small stream must be readable, writable and seekable!.
+        /// </summary>
+        internal static string TheSmallStreamMustBeReadableWritableAndSeekable {
+            get {
+                return ResourceManager.GetString("TheSmallStreamMustBeReadableWritableAndSeekable", resourceCulture);
+            }
+        }
     }
 }

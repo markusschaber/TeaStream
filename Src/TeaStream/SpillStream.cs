@@ -7,6 +7,7 @@
 
 namespace TeaStream
 {
+    using global::TeaStream.Properties;
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -34,7 +35,7 @@ namespace TeaStream
             _largeStreamFactory = largeStreamCreator ?? CreateTempFileStream;
             _backStream = smallStream ?? new MemoryStream();
             if (!_backStream.CanSeek || !_backStream.CanRead || !_backStream.CanWrite)
-                throw new ArgumentException("The small stream must be readable, writable and seekable!");
+                throw new ArgumentException(Resources.TheSmallStreamMustBeReadableWritableAndSeekable);
         }
 
         public SpillStream(long limit, Func<string> tempFileNameFactory, Stream smallStream = null)
@@ -59,7 +60,7 @@ namespace TeaStream
         public bool NeedUpgrade(long additionalBytes)
         {
             if (additionalBytes < 0)
-                throw new ArgumentOutOfRangeException(nameof(additionalBytes), "additional bytes cannot be negative!");
+                throw new ArgumentOutOfRangeException(nameof(additionalBytes), Resources.AdditionalBytesMustNotBeNegative);
 
             if (IsOnLargeStream)
                 return false; // already upgraded.
@@ -110,7 +111,7 @@ namespace TeaStream
         {
             newStream = _largeStreamFactory();
             if (!newStream.CanSeek || !newStream.CanRead || !newStream.CanWrite)
-                throw new InvalidOperationException("The large stream must be readable, writable and seekable!");
+                throw new InvalidOperationException(Resources.TheLargeStreamMustBeReadableWritableAndSeekable);
 
             if (_backStream.CanTimeout && newStream.CanTimeout)
             {
@@ -190,11 +191,6 @@ namespace TeaStream
             return tcs.Task;
         }
 
-        public override void Close()
-        {
-            _backStream.Close();
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -272,6 +268,5 @@ namespace TeaStream
 
             _backStream.WriteByte(value);
         }
-
     }
 }

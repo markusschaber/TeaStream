@@ -6,6 +6,7 @@
  */
 namespace TeaStream
 {
+    using global::TeaStream.Properties;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -77,10 +78,6 @@ namespace TeaStream
 
         public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-        public override int ReadTimeout { get => base.ReadTimeout; set => base.ReadTimeout = value; }
-
-        public override int WriteTimeout { get => base.WriteTimeout; set => base.WriteTimeout = value; }
-
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException();
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
@@ -101,33 +98,6 @@ namespace TeaStream
             });
 
             return tcs.Task;
-
-        }
-
-        public override void Close()
-        {
-            object exBuff = null;
-
-            foreach (var stream in baseStreams)
-            {
-                try
-                {
-                    stream.Close();
-                }
-                catch (Exception ex)
-                {
-                    AggregateException(ex, ref exBuff);
-                }
-            }
-            try
-            {
-                base.Close();
-            }
-            catch (Exception ex)
-            {
-                AggregateException(ex, ref exBuff);
-            }
-            RaiseAggregated(exBuff);
         }
 
         public override int EndRead(IAsyncResult asyncResult) => throw new NotSupportedException();
@@ -275,9 +245,6 @@ namespace TeaStream
             }
         }
 
-        [Obsolete]
-        protected override WaitHandle CreateWaitHandle() => throw new NotSupportedException();
-
         protected override void Dispose(bool disposing)
         {
             // No special exception handling here, as Dispose() should never throw.
@@ -324,7 +291,7 @@ namespace TeaStream
             }
             else if (exBuff is List<Exception> lex)
             {
-                throw new AggregateException("Several calls to basestreams failed:", lex);
+                throw new AggregateException(Resources.SeveralCallsToBasestreamsFailed, lex);
             }
             else
             {

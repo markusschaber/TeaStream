@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46;net472</TargetFrameworks>
     <LangVersion>7.3</LangVersion>
     <Authors>Markus Schaber</Authors>
     <Description>Stream Utilities to replicate, duplicate and process Streams in .NET (Core)</Description>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="All" Version="1.0.0-preview.2" />
   </ItemGroup>
 
   <ItemGroup>

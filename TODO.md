@@ -18,7 +18,7 @@ If there are already better, mature solutions with acceptable license available,
 - - Not sure yet how to do this without introducing too much overhead for the other baseStreams.
 - - Maybe this is better done using some dedicated stream wrapper?
 - Do we gain anything by implementing our own CopyToAsync()?
-- Check whether ForceAsync can lead to dead locks on the UI thread (maybe ConfigureAwait(false) or something is necessary?)
+- Check whether ForceAsync can lead to dead locks on the UI thread (maybe ConfigureAwait(false) or something is necessary? Or is this the callers responsibility?)
 
 ## FilterStream
 - Filter all bytes through given Filter delegates.
@@ -30,8 +30,8 @@ If there are already better, mature solutions with acceptable license available,
 - Connect together a readable and a writable stream
 - May need a better name or be obsolete due to existing PipeStreams https://docs.microsoft.com/de-de/dotnet/standard/io/pipe-operations
 
-## NullStream
-- Stream which provides as many 0 bytes as you want, and just drops data on write.
+## ClearStream
+- Stream which provides as many 0 bytes as you want, and just drops data on write, use for testing.
 
 ## SpillStream
 - Is multi-level spilling necessary? (More than the two layers MemoryStream and FileStream)?
