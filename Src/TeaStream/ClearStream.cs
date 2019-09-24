@@ -72,7 +72,7 @@ namespace TeaStream
             return (int)remaining;
         }
 
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object? state)
         {
             Read(buffer, offset, count);
 
@@ -83,7 +83,7 @@ namespace TeaStream
             return result;
         }
 
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object? state)
         {
             Write(buffer, offset, count);
 

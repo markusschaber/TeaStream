@@ -26,10 +26,10 @@ namespace TeaStream
     public sealed class SpillStream : Stream
     {
         private Stream _backStream;
-        private Func<Stream> _largeStreamFactory;
+        private Func<Stream>? _largeStreamFactory;
         private readonly long _limit;
 
-        public SpillStream(long limit, Func<Stream> largeStreamCreator = null, Stream smallStream = null)
+        public SpillStream(long limit, Func<Stream>? largeStreamCreator = null, Stream? smallStream = null)
         {
             _limit = limit;
             _largeStreamFactory = largeStreamCreator ?? CreateTempFileStream;
@@ -38,7 +38,7 @@ namespace TeaStream
                 throw new ArgumentException(Resources.TheStreamMustBeReadableWritableAndSeekable);
         }
 
-        public SpillStream(long limit, Func<string> tempFileNameFactory, Stream smallStream = null)
+        public SpillStream(long limit, Func<string> tempFileNameFactory, Stream? smallStream = null)
             : this(limit, () => CreateTempFileStream(tempFileNameFactory), smallStream)
         {
             if (tempFileNameFactory == null)
@@ -87,17 +87,19 @@ namespace TeaStream
 
         public override int WriteTimeout { get => _backStream.WriteTimeout; set => _backStream.WriteTimeout = value; }
 
-        private void MigrateToLongFile()
+        private void MigrateToLongFileIfNotYet()
         {
-            Stream newStream = null;
-            Stream oldStream = null;
+            if (_largeStreamFactory == null)
+                return;
+            Stream? newStream = null;
+            Stream? oldStream = null;
             try
             {
-                PrepareNewStream(out newStream, out oldStream, out long position);
+                PrepareNewStream(_largeStreamFactory, out newStream, out oldStream, out long position);
 
                 oldStream.CopyTo(newStream);
 
-                PostpareNewStream(ref newStream, oldStream, position);
+                newStream = PostpareNewStream(ref newStream, oldStream, position);
             }
             finally
             {
@@ -107,9 +109,9 @@ namespace TeaStream
             }
         }
 
-        private void PrepareNewStream(out Stream newStream, out Stream oldStream, out long Position)
+        private void PrepareNewStream(Func<Stream> largeStreamFactory, out Stream newStream, out Stream oldStream, out long Position)
         {
-            newStream = _largeStreamFactory();
+            newStream = largeStreamFactory!();
             if (!newStream.CanSeek || !newStream.CanRead || !newStream.CanWrite)
                 throw new InvalidOperationException(Resources.TheStreamMustBeReadableWritableAndSeekable);
 
@@ -127,7 +129,7 @@ namespace TeaStream
             oldStream.Position = 0;
         }
 
-        private void PostpareNewStream(ref Stream newStream, Stream oldStream, long position)
+        private Stream? PostpareNewStream(ref Stream newStream, Stream oldStream, long position)
         {
             newStream.Position = position;
 
@@ -135,27 +137,37 @@ namespace TeaStream
 
             // Everything worked well, we can transition now
             _backStream = newStream;
-            newStream = null;
             _largeStreamFactory = null;
+            return null;
         }
 
-        private async ValueTask MigrateToLongFileAsync(CancellationToken token)
+        private async ValueTask MigrateToLongFileIfNotYetAsync(CancellationToken token)
         {
-            Stream newStream = null;
-            Stream oldStream = null;
+            if (_largeStreamFactory == null)
+                return;
+
+            Stream? newStream = null;
+            Stream? oldStream = null;
             try
             {
-                PrepareNewStream(out newStream, out oldStream, out long position);
+                PrepareNewStream(_largeStreamFactory, out newStream, out oldStream, out long position);
 
                 await oldStream.CopyToAsync(newStream, 81920, token);
 
-                PostpareNewStream(ref newStream, oldStream, position);
+                newStream = PostpareNewStream(ref newStream, oldStream, position);
             }
             finally
             {
                 // In case anything goes wrong, we dispose both streams as we're in an invalid state now.
+#if NETCOREAPP3_0 || NETSTANDARD2_1
+                if (newStream != null)
+                    await newStream.DisposeAsync();
+                if (oldStream != null)
+                    await oldStream.DisposeAsync();
+#else
                 newStream?.Dispose();
                 oldStream?.Dispose();
+#endif
             }
         }
 
@@ -164,29 +176,19 @@ namespace TeaStream
             return $"SpillStream({_limit}, {_backStream})";
         }
 
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object? state)
         {
             return _backStream.BeginRead(buffer, offset, count, callback, state);
         }
 
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object? state)
         {
             // We need some fake type here, as TaskCompletionSource<void> does not exist.
             var tcs = new TaskCompletionSource<bool>(state);
 
             // Encapsulating WriteAsync here allows us to also handle the migration async,
             // if switching to the large stream is necessary.
-            WriteAsync(buffer, offset, count).ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                    tcs.TrySetException(t.Exception.InnerException);
-                else if (t.IsCanceled)
-                    tcs.TrySetCanceled();
-                else
-                    tcs.TrySetResult(true);
-
-                callback?.Invoke(tcs.Task);
-            });
+            WriteAsync(buffer, offset, count).ContinueWith(t => tcs.FinishAsyncResult(t, callback));
 
             return tcs.Task;
         }
@@ -239,8 +241,8 @@ namespace TeaStream
 
         public override void SetLength(long value)
         {
-            if (Length > _limit && _largeStreamFactory != null)
-                MigrateToLongFile();
+            if (value > _limit)
+                MigrateToLongFileIfNotYet();
 
             _backStream.SetLength(value);
         }
@@ -248,7 +250,7 @@ namespace TeaStream
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (NeedUpgrade(count))
-                MigrateToLongFile();
+                MigrateToLongFileIfNotYet();
 
             _backStream.Write(buffer, offset, count);
         }
@@ -256,7 +258,7 @@ namespace TeaStream
         public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             if (NeedUpgrade(count))
-                await MigrateToLongFileAsync(cancellationToken);
+                await MigrateToLongFileIfNotYetAsync(cancellationToken);
 
             await _backStream.WriteAsync(buffer, offset, count, cancellationToken);
         }
@@ -264,7 +266,7 @@ namespace TeaStream
         public override void WriteByte(byte value)
         {
             if (NeedUpgrade(1))
-                MigrateToLongFile();
+                MigrateToLongFileIfNotYet();
 
             _backStream.WriteByte(value);
         }

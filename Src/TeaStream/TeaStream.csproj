@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net46;net472</TargetFrameworks>
-    <LangVersion>7.3</LangVersion>
+    <TargetFrameworks>netstandard2.0;net46;net472;netstandard2.1;netcoreapp3.0</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
     <Authors>Markus Schaber</Authors>
     <Description>Stream Utilities to replicate, duplicate and process Streams in .NET (Core)</Description>
     <PackageLicenseFile></PackageLicenseFile>
@@ -37,5 +37,4 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
 </Project>

@@ -6,13 +6,9 @@
  */
 namespace TeaStream
 {
-    using global::TeaStream.Properties;
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Runtime.ExceptionServices;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -78,28 +74,18 @@ namespace TeaStream
 
         public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException();
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object? state) => throw new NotSupportedException();
 
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object? state)
         {
             // We need some fake type here, as TaskCompletionSource<void> does not exist.
             var tcs = new TaskCompletionSource<bool>(state);
 
-            ReadAsync(buffer, offset, count).ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                    tcs.TrySetException(t.Exception.InnerException);
-                else if (t.IsCanceled)
-                    tcs.TrySetCanceled();
-                else
-                    tcs.TrySetResult(true);
-
-                callback?.Invoke(tcs.Task);
-            });
+            WriteAsync(buffer, offset, count).ContinueWith(t => tcs.FinishAsyncResult(t, callback));
 
             return tcs.Task;
         }
-
+        
         public override int EndRead(IAsyncResult asyncResult) => throw new NotSupportedException();
 
         public override void EndWrite(IAsyncResult asyncResult)
@@ -115,7 +101,7 @@ namespace TeaStream
             }
             else
             {
-                object exBuff = null;
+                var aggregator = new ExceptionAggregator();
 
                 foreach (var stream in baseStreams)
                 {
@@ -123,12 +109,12 @@ namespace TeaStream
                     {
                         stream.Flush();
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!ForceSerial)
                     {
-                        AggregateException(ex, ref exBuff);
+                        aggregator += ex;
                     }
                 }
-                RaiseAggregated(exBuff);
+                aggregator.RaiseIfAggregated();
             }
         }
 
@@ -174,7 +160,7 @@ namespace TeaStream
             }
             else
             {
-                object exBuff = null;
+                var aggregator = new ExceptionAggregator();
 
                 foreach (var stream in baseStreams)
                 {
@@ -182,12 +168,12 @@ namespace TeaStream
                     {
                         stream.Write(buffer, offset, count);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!ForceSerial)
                     {
-                        AggregateException(ex, ref exBuff);
+                        aggregator += ex;
                     }
                 }
-                RaiseAggregated(exBuff);
+                aggregator.RaiseIfAggregated();
             }
         }
 
@@ -199,7 +185,7 @@ namespace TeaStream
             }
             else if (ForceSerial)
             {
-                object exBuff = null;
+                var aggregator = new ExceptionAggregator();
 
                 foreach (var stream in baseStreams)
                 {
@@ -207,12 +193,12 @@ namespace TeaStream
                     {
                         await stream.WriteAsync(buffer, offset, count, cancellationToken);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) 
                     {
-                        AggregateException(ex, ref exBuff);
+                        aggregator += ex;
                     }
                 }
-                RaiseAggregated(exBuff);
+                aggregator.RaiseIfAggregated();
             }
             else
             {
@@ -228,7 +214,7 @@ namespace TeaStream
             }
             else
             {
-                object exBuff = null;
+                var aggregator = new ExceptionAggregator();
 
                 foreach (var stream in baseStreams)
                 {
@@ -236,12 +222,12 @@ namespace TeaStream
                     {
                         stream.WriteByte(value);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (!ForceSerial)
                     {
-                        AggregateException(ex, ref exBuff);
+                        aggregator += ex;
                     }
                 }
-                RaiseAggregated(exBuff);
+                aggregator.RaiseIfAggregated();
             }
         }
 
@@ -256,47 +242,6 @@ namespace TeaStream
                 }
             }
             base.Dispose(disposing);
-        }
-
-        private static void AggregateException(Exception newEx, ref object exBuff)
-        {
-            if (exBuff == null)
-            {
-                exBuff = newEx;
-            }
-            else if (exBuff is Exception cex)
-            {
-                exBuff = new List<Exception>() { cex, newEx };
-            }
-            else if (exBuff is List<Exception> lex)
-            {
-                lex.Add(newEx);
-            }
-            else
-            {
-                Trace.Fail("Exception problem!");
-            }
-        }
-
-        private static void RaiseAggregated(object exBuff)
-        {
-            if (exBuff == null)
-            {
-                return;
-            }
-            else if (exBuff is Exception cex)
-            {
-                // rethrow the exception without mangling the stack trace
-                ExceptionDispatchInfo.Capture(cex).Throw();
-            }
-            else if (exBuff is List<Exception> lex)
-            {
-                throw new AggregateException(Resources.SeveralCallsToBasestreamsFailed, lex);
-            }
-            else
-            {
-                Trace.Fail("Exception problem!");
-            }
         }
     }
 }
